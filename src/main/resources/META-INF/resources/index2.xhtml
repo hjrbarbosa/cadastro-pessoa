@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+</h:head>
+
+<h:body>
+
+    <div class="card crud-demo">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{pessoaBean.openNew}"
+                                     update=":dialogs:manage-product-content" oncomplete="PF('managePessoaDialog').show()"
+                                     styleClass="ui-button-success" style="margin-right: .5rem">
+                        <p:resetInput target=":dialogs:manage-product-content" />
+                    </p:commandButton>
+
+                </p:toolbarGroup>
+
+            </p:toolbar>
+
+            <p:dataTable id="dt-pessoas" widgetVar="dtProducts" var="pessoa" value="#{pessoaBean.pessoas}"
+                         reflow="true" styleClass="products-table" selection="#{pessoaBean.selectedPessoas}"
+                         rowKey="#{pessoa.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                <f:facet name="header">
+                    <div class="products-table-header">
+                        <span style="font-weight: bold">PESSOAS</span>
+                        <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtProducts').filter()" placeholder="Search" />
+                    </span>
+                    </div>
+                </f:facet>
+
+                <p:column selectionMode="multiple" exportable="false"></p:column>
+
+                <p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
+                    <h:outputText value="#{pessoa.nome}" />
+                </p:column>
+                <p:column headerText="Data Nascimento" sortBy="#{pessoa.dataNascimento}" filterBy="#{pessoa.dataNascimento}">
+                    <h:outputText value="#{pessoa.dataNascimento}" />
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="dialogs">
+            <p:dialog header="Cadastro Pessoa" showEffect="fade" modal="true" widgetVar="managePessoaDialog"
+                      responsive="true">
+                <p:outputPanel id="manage-product-content" class="ui-fluid">
+                    <p:outputPanel rendered="#{not empty pessoaBean.selectedPessoa}">
+
+                        <div class="field">
+                            <p:outputLabel for="name">Name</p:outputLabel>
+                            <p:inputText id="name" value="#{pessoaBean.selectedPessoa.nome}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="dataNascimento">Data nascimento</p:outputLabel>
+                            <p:calendar id="dataNascimento" value="#{pessoaBean.selectedPessoa.dataNascimento}" pattern="MM/dd/yyyy"/>
+                        </div>
+
+                    </p:outputPanel>
+                </p:outputPanel>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{pessoaBean.salvar()}"
+                                     update="manage-product-content" process="manage-product-content @this" />
+                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('managePessoaDialog').hide()"
+                                     class="ui-button-secondary" type="button" />
+                </f:facet>
+            </p:dialog>
+
+
+        </h:form>
+
+    </div>
+
+
+</h:body>
+</html>
