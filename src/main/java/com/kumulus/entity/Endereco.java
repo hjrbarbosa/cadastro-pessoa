@@ -1,17 +1,15 @@
 package com.kumulus.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Data
 @Entity(name = "endereco")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
 public class Endereco {
 
         @Id
@@ -25,8 +23,8 @@ public class Endereco {
         @Column(name = "cidade", length = 100, nullable = false)
         private String cidade;
 
-        @ManyToOne
-        @JoinColumn(name="pessoa_id", nullable=false)
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name="cod_pessoa", nullable=false)
         private Pessoa pessoa;
 
 }

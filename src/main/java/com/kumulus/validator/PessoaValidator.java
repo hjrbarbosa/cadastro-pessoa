@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 public class PessoaValidator {
 
     public void beforeSave(Pessoa p) {
-        if (p.getEnderecos() == null || p.getEnderecos().isEmpty()) {
-            throw new IllegalArgumentException("Prenchimento do campo endereço é obrigatório.");
-        }
+//        if (p.getEnderecos() == null || p.getEnderecos().isEmpty()) {
+//            throw new IllegalArgumentException("Prenchimento do campo endereço é obrigatório.");
+//        }
     }
 
 }

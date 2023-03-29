@@ -2,6 +2,7 @@ package com.kumulus.bean;
 
 import com.kumulus.entity.Endereco;
 import com.kumulus.entity.Pessoa;
+import com.kumulus.form.CadastroPessoaFormInput;
 import com.kumulus.service.EnderecoService;
 import com.kumulus.service.PessoaService;
 import lombok.Getter;
@@ -23,11 +24,13 @@ import java.util.*;
 @ViewScoped
 @Getter
 @Setter
-public class PessoaBean implements Serializable {
+public class CadastroPessoaBean implements Serializable {
 
 
     private List<Pessoa> pessoas;
+    private List<Endereco> enderecos;
 
+    private CadastroPessoaFormInput selecionarCadastroPessoaFormInput;
     private Pessoa selectedPessoa;
     private Endereco selectedEndereco;
 
@@ -42,12 +45,6 @@ public class PessoaBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        Endereco endereco = Endereco
-                .builder()
-                .uf("PA")
-                .cidade("Belém")
-                .build();
-
         Pessoa heldinho = Pessoa
                 .builder()
                 .dataNascimento(new Date())
@@ -55,30 +52,26 @@ public class PessoaBean implements Serializable {
                 .nome("Heldinho")
                 .build();
 
-//        heldinho.addEndereco(endereco);
-//        heldinho.setEnderecos(getEndereco(heldinho));
-
-        this.pessoaService.salvar(heldinho);
-        this.enderecoService.salvar(heldinho, endereco);
-
-
-        this.pessoas = this.pessoaService.findAll();
-    }
-
-    private Set<Endereco> getEndereco(Pessoa heldinho) {
-        Set<Endereco> enderecoSet = new HashSet<>();
         Endereco endereco = Endereco
                 .builder()
                 .uf("PA")
                 .cidade("Belém")
                 .pessoa(heldinho)
                 .build();
-        enderecoSet.add(endereco);
-        return enderecoSet;
+
+        heldinho.addEndereco(endereco);
+//        heldinho.setEnderecos(getEndereco(heldinho));
+
+        this.pessoaService.salvar(heldinho);
+//        this.enderecoService.salvar(heldinho, endereco);
+
+
+        this.pessoas = this.pessoaService.findAll();
     }
 
     public void openNew() {
-        this.selectedPessoa = new Pessoa();
+        this.selecionarCadastroPessoaFormInput = new CadastroPessoaFormInput();
+        this.selectedEnderecos = null;
     }
 
     public void enderecoNew() {
@@ -86,23 +79,16 @@ public class PessoaBean implements Serializable {
     }
 
     public void salvar() {
-//        try {
-//            this.selectedPessoa.addEndereco(
-//                    Endereco
-//                            .builder()
-//                            .uf("CE")
-//                            .cidade("Belém")
-//                    .build()
-//            );
-            this.pessoaService.salvar(this.selectedPessoa);
+        try {
+            this.pessoaService.salvarFromInput(this.selecionarCadastroPessoaFormInput, selectedEnderecos);
 
             this.pessoas = this.pessoaService.findAll();
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Registro salvo com sucesso."));
-//        } catch (Exception e) {
-//            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
-//        }
-        PrimeFaces.current().executeScript("PF('managePessoaDialog').hide()");
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+        }
+        PrimeFaces.current().executeScript("PF('manageCadastroPessoaDialog').hide()");
         PrimeFaces.current().ajax().update("form:messages", "form:dt-pessoas");
     }
 
@@ -110,11 +96,22 @@ public class PessoaBean implements Serializable {
         if(this.selectedEnderecos == null){
             this.selectedEnderecos = new ArrayList<>();
         }
-        this.selectedEnderecos.add(this.selectedEndereco);
 
-        this.selectedEndereco = new Endereco();
+        this.selectedEnderecos.add(getEnderecoFromInput(this.selecionarCadastroPessoaFormInput));
+        limpaCamposCidade(this.selecionarCadastroPessoaFormInput);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Endereço adicionado com sucesso."));
+    }
 
-//        PrimeFaces.current().executeScript("PF('manageEnderecoDialog').hide()");
+    private void limpaCamposCidade(CadastroPessoaFormInput input) {
+        input.setEstado(null);
+        input.setCidade(null);
+    }
+
+    private Endereco getEnderecoFromInput(CadastroPessoaFormInput input) {
+        return Endereco.builder()
+                .uf(input.getEstado())
+                .cidade(input.getCidade())
+                .build();
     }
 
     public void deletar() {
@@ -134,6 +131,18 @@ public class PessoaBean implements Serializable {
         return "Delete";
     }
 
+    public void deletePessoa(){
+        this.pessoaService.delete(this.selectedPessoa);
+        this.pessoas.remove(this.selectedPessoa);
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Pessoa Removida"));
+        PrimeFaces.current().ajax().update("form:messages", "form:dt-pessoas");
+    }
+
+    public void pessoaUpdate(){
+        CadastroPessoaFormInput a = this.selecionarCadastroPessoaFormInput;
+        Pessoa p = this.selectedPessoa;
+    }
+
     public boolean hasSelected() {
         return this.selectedPessoas != null && !this.selectedPessoas.isEmpty();
     }
@@ -146,5 +155,11 @@ public class PessoaBean implements Serializable {
         PrimeFaces.current().executeScript("PF('dtProducts').clearFilters()");
     }
 
+    public void atualizaForm(){
+        Pessoa a = this.selectedPessoa;
+        CadastroPessoaFormInput input = CadastroPessoaFormInput
+                .builder().build();
+
+    }
 
 }

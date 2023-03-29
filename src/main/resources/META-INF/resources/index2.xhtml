@@ -18,9 +18,9 @@
             <p:toolbar>
                 <p:toolbarGroup>
                     <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{pessoaBean.openNew}"
-                                     update=":dialogs:manage-product-content" oncomplete="PF('managePessoaDialog').show()"
+                                     update=":dialogs:manage-pessoa-content" oncomplete="PF('managePessoaDialog').show()"
                                      styleClass="ui-button-success" style="margin-right: .5rem">
-                        <p:resetInput target=":dialogs:manage-product-content" />
+                        <p:resetInput target=":dialogs:manage-pessoa-content" />
                     </p:commandButton>
 
                 </p:toolbarGroup>
@@ -54,7 +54,7 @@
         <h:form id="dialogs">
             <p:dialog header="Cadastro Pessoa" showEffect="fade" modal="true" widgetVar="managePessoaDialog"
                       responsive="true">
-                <p:outputPanel id="manage-product-content" class="ui-fluid">
+                <p:outputPanel id="manage-pessoa-content" class="ui-fluid">
                     <p:outputPanel rendered="#{not empty pessoaBean.selectedPessoa}">
 
                         <div class="field">
@@ -66,17 +66,25 @@
                             <p:calendar id="dataNascimento" value="#{pessoaBean.selectedPessoa.dataNascimento}" pattern="MM/dd/yyyy"/>
                         </div>
 
+                        <div class="field">
+                            <p:outputLabel for="sexo">Sexo</p:outputLabel>
+                            <p:selectOneRadio id="sexo" value="#{pessoaBean.selectedPessoa.sexo}"
+                                              layout="responsive" columns="2">
+                                <f:selectItem itemLabel="Masculino" itemValue="MA" />
+                                <f:selectItem itemLabel="Feminino" itemValue="FE" />
+                            </p:selectOneRadio>
+                        </div>
+
                     </p:outputPanel>
                 </p:outputPanel>
 
                 <f:facet name="footer">
                     <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{pessoaBean.salvar()}"
-                                     update="manage-product-content" process="manage-product-content @this" />
+                                     update="manage-pessoa-content" process="manage-pessoa-content @this" />
                     <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('managePessoaDialog').hide()"
                                      class="ui-button-secondary" type="button" />
                 </f:facet>
             </p:dialog>
-
 
         </h:form>
 

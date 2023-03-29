@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+</h:head>
+
+<h:body>
+
+    <div class="card crud-demo">
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+
+            <p:toolbar>
+                <p:toolbarGroup>
+                    <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{cadastroPessoaBean.openNew}"
+                                     update=":dialogs:manage-cadastro-pessoa-content" oncomplete="PF('manageCadastroPessoaDialog').show()"
+                                     styleClass="ui-button-success" style="margin-right: .5rem">
+                        <p:resetInput target=":dialogs:manage-cadastro-pessoa-content" />
+                    </p:commandButton>
+
+                </p:toolbarGroup>
+
+            </p:toolbar>
+
+            <p:dataTable id="dt-pessoas" widgetVar="dtPessoas" var="pessoa" value="#{cadastroPessoaBean.pessoas}"
+                         reflow="true" styleClass="pessoa-table" selection="#{cadastroPessoaBean.selectedPessoas}"
+                         rowKey="#{pessoa.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                <f:facet name="header">
+                    <div class="pessoas-table-header">
+                        <span style="font-weight: bold">PESSOAS</span>
+                        <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"></i>
+                        <p:inputText id="globalFilter" onkeyup="PF('dtPessoas').filter()" placeholder="Search" />
+                    </span>
+                    </div>
+                </f:facet>
+
+                <p:column selectionMode="multiple" exportable="false"></p:column>
+
+                <p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
+                    <h:outputText value="#{pessoa.nome}" />
+                </p:column>
+                <p:column headerText="Data Nascimento" sortBy="#{pessoa.dataNascimento}" filterBy="#{pessoa.dataNascimento}">
+                    <h:outputText value="#{pessoa.dataNascimento}" />
+                </p:column>
+
+                <p:column exportable="false">
+                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-cadastro-pessoa-content"
+                                     oncomplete="PF('updatePessoaDialog').show()"
+                                     styleClass="edit-button rounded-button ui-button-success" process="@this">
+                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.selectedPessoa}" />
+<!--                        <p:resetInput target=":dialogs:manage-cadastro-pessoa-content" />-->
+                    </p:commandButton>
+                    <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                     process="@this"
+                                     oncomplete="PF('deletePessoaDialog').show()">
+                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.selectedPessoa}" />
+                    </p:commandButton>
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+
+        <h:form id="dialogs">
+            <p:dialog header="Cadastro Pessoa" showEffect="fade" modal="true" widgetVar="manageCadastroPessoaDialog"
+                      responsive="true">
+                <p:outputPanel id="manage-cadastro-pessoa-content" class="ui-fluid">
+                    <p:outputPanel rendered="#{not empty cadastroPessoaBean.selecionarCadastroPessoaFormInput}">
+
+                        <div class="field">
+                            <p:outputLabel for="name">Name</p:outputLabel>
+                            <p:inputText id="name" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.nome}" required="true" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="dataNascimento">Data nascimento</p:outputLabel>
+                            <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.dataNascimento}" pattern="MM/dd/yyyy"/>
+                        </div>
+
+                        <div class="field">
+                            <p:outputLabel for="sexo">Sexo</p:outputLabel>
+                            <p:selectOneRadio id="sexo" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.sexo}"
+                                              layout="responsive" columns="2">
+                                <f:selectItem itemLabel="Masculino" itemValue="MA" />
+                                <f:selectItem itemLabel="Feminino" itemValue="FE" />
+                            </p:selectOneRadio>
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="estado">Estado</p:outputLabel>
+                            <p:inputText id="estado" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.estado}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="cidade">Cidade</p:outputLabel>
+                            <p:inputText id="cidade" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.cidade}" />
+                        </div>
+                        <div>
+                            <p:commandButton value="Adicionar Endereço" icon="pi pi-check" actionListener="#{cadastroPessoaBean.adicionaEndereco()}"
+                                             update="manage-cadastro-pessoa-content" process="manage-cadastro-pessoa-content @this" />
+                        </div>
+                        <div>
+                            <p:dataTable id="dt-enderecos" var="endereco" value="#{cadastroPessoaBean.selectedEnderecos}">
+
+                                <p:column headerText="Estado" >
+                                    <h:outputText value="#{endereco.uf}" />
+                                </p:column>
+                                <p:column headerText="Cidade" >
+                                    <h:outputText value="#{endereco.cidade}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+
+                    </p:outputPanel>
+                </p:outputPanel>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Salvar" icon="pi pi-check" actionListener="#{cadastroPessoaBean.salvar()}"
+                                     update="manage-cadastro-pessoa-content" process="manage-cadastro-pessoa-content @this" />
+                    <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('manageCadastroPessoaDialog').hide()"
+                                     class="ui-button-secondary" type="button" />
+                </f:facet>
+            </p:dialog>
+
+            <p:confirmDialog widgetVar="deletePessoaDialog" showEffect="fade" width="300"
+                             message="Deletar cadastro de pessoa?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{cadastroPessoaBean.deletePessoa}"
+                                 process="@this" update="manage-cadastro-pessoa-content"
+                                 oncomplete="PF('deletePessoaDialog').hide()" />
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deletePessoaDialog').hide()" />
+            </p:confirmDialog>
+
+            <p:confirmDialog widgetVar="updatePessoaDialog" showEffect="fade" width="300"
+                             message="Deletar atualizar  o cadastro da pessoa?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{cadastroPessoaBean.atualizaForm}"
+                                 process="@this" update="manage-cadastro-pessoa-content"
+                                 oncomplete="PF('manageCadastroPessoaDialog').show()" />
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('updatePessoaDialog').hide()" />
+            </p:confirmDialog>
+        </h:form>
+
+    </div>
+
+
+</h:body>
+</html>
