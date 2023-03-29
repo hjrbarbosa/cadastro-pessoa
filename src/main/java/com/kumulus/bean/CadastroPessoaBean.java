@@ -80,11 +80,15 @@ public class CadastroPessoaBean implements Serializable {
 
     public void salvar() {
         try {
-            this.pessoaService.salvarFromInput(this.selecionarCadastroPessoaFormInput, selectedEnderecos);
-
+            if (this.selecionarCadastroPessoaFormInput.getId() == null){
+                this.pessoaService.salvarFromInput(this.selecionarCadastroPessoaFormInput, selectedEnderecos);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Registro salvo com sucesso."));
+            } else {
+                this.pessoaService.atualizarFromInput(this.selecionarCadastroPessoaFormInput, selectedEnderecos);
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Registro atualizado com sucesso."));
+            }
             this.pessoas = this.pessoaService.findAll();
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Registro salvo com sucesso."));
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
         }
@@ -157,9 +161,18 @@ public class CadastroPessoaBean implements Serializable {
 
     public void atualizaForm(){
         Pessoa a = this.selectedPessoa;
-        CadastroPessoaFormInput input = CadastroPessoaFormInput
-                .builder().build();
-
+        CadastroPessoaFormInput input = CadastroPessoaFormInput.builder()
+                .id(a.getId())
+                .nome(a.getNome())
+                .dataNascimento(a.getDataNascimento())
+                .sexo(a.getSexo())
+                .build();
+        if (this.selectedEndereco == null){
+            this.selectedEnderecos = new ArrayList<>();
+        }
+        a.getEnderecos().forEach(e -> this.selectedEnderecos.add(e));
+        this.selecionarCadastroPessoaFormInput = input;
+        PrimeFaces.current().executeScript("PF('updatePessoaDialog').hide()");
     }
 
 }

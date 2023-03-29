@@ -9,7 +9,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CadastroPessoaFormInput {
+
+    private Long id;
+
     private String nome;
+
     private Date dataNascimento;
 
     private String sexo;
