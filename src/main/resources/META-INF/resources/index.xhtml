@@ -56,7 +56,6 @@
                                      oncomplete="PF('updatePessoaDialog').show()"
                                      styleClass="edit-button rounded-button ui-button-success" process="@this">
                         <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.pessoa}" />
-<!--                        <p:resetInput target=":dialogs:manage-cadastro-pessoa-content" />-->
                     </p:commandButton>
                     <p:commandButton value="Excluir" class="ui-button-warning rounded-button" icon="pi pi-trash"
                                      process="@this"
@@ -68,9 +67,9 @@
             </p:dataTable>
         </h:form>
 
-        <h:form id="dialogs">
+        <h:form id="dialogs" width="700" >
             <p:dialog header="Cadastro Pessoa" showEffect="fade" modal="true" widgetVar="manageCadastroPessoaDialog"
-                      responsive="true">
+                      responsive="true" >
                 <p:outputPanel id="manage-cadastro-pessoa-content" class="ui-fluid">
                     <p:outputPanel rendered="#{not empty cadastroPessoaBean.pessoaFormInput}">
 
@@ -116,7 +115,7 @@
                                              update="manage-cadastro-pessoa-content" process="manage-cadastro-pessoa-content @this" />
                         </div>
                         <div>
-                            <p:dataTable id="dt-enderecos" var="endereco" value="#{cadastroPessoaBean.selectedEnderecos}">
+                            <p:dataTable id="dt-enderecos" var="endereco" value="#{cadastroPessoaBean.enderecoList}">
 
                                 <p:column headerText="Estado" >
                                     <h:outputText value="#{endereco.uf}" />
@@ -132,6 +131,14 @@
                                 </p:column>
                                 <p:column headerText="CEP" >
                                     <h:outputText value="#{endereco.cep}" />
+                                </p:column>
+
+                                <p:column exportable="false">
+                                    <p:commandButton value="Excluir" class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                                     process="@this"
+                                                     oncomplete="PF('deleteEnderecoDialog').show()">
+                                        <f:setPropertyActionListener value="#{endereco}" target="#{cadastroPessoaBean.endereco}" />
+                                    </p:commandButton>
                                 </p:column>
 
                             </p:dataTable>
@@ -165,6 +172,16 @@
                 <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
                                  onclick="PF('updatePessoaDialog').hide()" />
             </p:confirmDialog>
+
+            <p:confirmDialog widgetVar="deleteEnderecoDialog" showEffect="fade" width="300"
+                             message="Deletar endereço?" header="Confirm" severity="warn">
+                <p:commandButton value="Yes" icon="pi pi-check" actionListener="#{cadastroPessoaBean.deleteEndereco}"
+                                 process="@this" update="manage-cadastro-pessoa-content"
+                                 oncomplete="PF('deleteEnderecoDialog').hide()" />
+                <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                 onclick="PF('deleteEnderecoDialog').hide()" />
+            </p:confirmDialog>
+
         </h:form>
 
     </div>
