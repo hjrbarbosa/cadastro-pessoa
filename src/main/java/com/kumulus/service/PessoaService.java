@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +21,7 @@ public class PessoaService {
     @Resource
     private EnderecoValidator enderecoValidator;
 
-    @Resource
-    private EnderecoService enderecoService;
-
     public void salvar(Pessoa p) {
-//        this.pessoaValidator.beforeSave(p);
         this.pessoaRepository.save(p);
     }
 
@@ -41,19 +35,11 @@ public class PessoaService {
         p.setNome(input.getNome());
         p.setDataNascimento(input.getDataNascimento());
         p.setSexo(input.getSexo());
-        p.setEnderecos(getEnderecos(enderecos));
-        this.pessoaRepository.save(p);
-
-//        enderecos.forEach(e -> e.setPessoa(p));
-//        this.enderecoService.salvarEnderecos(enderecos);
-
-
-    }
-
-    private Set<Endereco> getEnderecos(List<Endereco> enderecos) {
-        Set<Endereco> enderecoSet = new HashSet<>();
-        enderecos.forEach(enderecoSet::add);
-        return enderecoSet;
+        enderecos.forEach(e -> {
+            e.setPessoa(p);
+            p.addEndereco(e);
+        });
+        salvar(p);
     }
 
     public void delete(Pessoa selectedPessoa) {
@@ -84,9 +70,22 @@ public class PessoaService {
                 .forEach(enderecoUpdateInput -> {
                     Endereco enderecoNovo = new Endereco();
                     enderecoNovo.setPessoa(pessoaUpdate);
+                    enderecoNovo.setUf(enderecoUpdateInput.getUf());
+                    enderecoNovo.setCidade(enderecoUpdateInput.getCidade());
+                    enderecoNovo.setLogradouro(enderecoUpdateInput.getLogradouro());
+                    enderecoNovo.setNumero(enderecoUpdateInput.getNumero());
+                    enderecoNovo.setCep(enderecoUpdateInput.getCep());
                     pessoaUpdate.addEndereco(enderecoNovo);
                 });
         this.pessoaRepository.save(pessoaUpdate);
 
+    }
+
+    public void validaEnderecoPessoa(CadastroPessoaFormInput input) {
+        Endereco endereco = Endereco.builder()
+                .uf(input.getEstado())
+                .cidade(input.getCidade())
+                .build();
+        this.enderecoValidator.enderecoVazio(endereco);
     }
 }

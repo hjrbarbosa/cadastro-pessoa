@@ -23,6 +23,15 @@ public class Endereco {
         @Column(name = "cidade", length = 100, nullable = false)
         private String cidade;
 
+        @Column(name = "logradouro", length = 100, nullable = false)
+        private String logradouro;
+
+        @Column(name = "numero", nullable = false)
+        private Integer numero;
+
+        @Column(name = "cep", length = 8, nullable = false)
+        private String cep;
+
         @ManyToOne(fetch = FetchType.LAZY)
         @JoinColumn(name="cod_pessoa", nullable=false)
         private Pessoa pessoa;

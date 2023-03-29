@@ -17,7 +17,7 @@
 
             <p:toolbar>
                 <p:toolbarGroup>
-                    <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{cadastroPessoaBean.openNew}"
+                    <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{cadastroPessoaBean.novoFormPessoa}"
                                      update=":dialogs:manage-cadastro-pessoa-content" oncomplete="PF('manageCadastroPessoaDialog').show()"
                                      styleClass="ui-button-success" style="margin-right: .5rem">
                         <p:resetInput target=":dialogs:manage-cadastro-pessoa-content" />
@@ -28,8 +28,8 @@
             </p:toolbar>
 
             <p:dataTable id="dt-pessoas" widgetVar="dtPessoas" var="pessoa" value="#{cadastroPessoaBean.pessoas}"
-                         reflow="true" styleClass="pessoa-table" selection="#{cadastroPessoaBean.selectedPessoas}"
-                         rowKey="#{pessoa.id}" paginator="true" rows="10" rowSelectMode="add" paginatorPosition="bottom">
+                         reflow="true" styleClass="pessoa-table" rowKey="#{pessoa.id}" paginator="true" rows="10"
+                         rowSelectMode="add" paginatorPosition="bottom">
                 <f:facet name="header">
                     <div class="pessoas-table-header">
                         <span style="font-weight: bold">PESSOAS</span>
@@ -39,26 +39,29 @@
                     </div>
                 </f:facet>
 
-                <p:column selectionMode="multiple" exportable="false"></p:column>
+<!--                <p:column selectionMode="multiple" exportable="false"></p:column>-->
 
                 <p:column headerText="Nome" sortBy="#{pessoa.nome}" filterBy="#{pessoa.nome}">
                     <h:outputText value="#{pessoa.nome}" />
+                </p:column>
+                <p:column headerText="Sexo" sortBy="#{pessoa.sexo}" filterBy="#{pessoa.sexo}">
+                    <h:outputText value="#{pessoa.sexo}" />
                 </p:column>
                 <p:column headerText="Data Nascimento" sortBy="#{pessoa.dataNascimento}" filterBy="#{pessoa.dataNascimento}">
                     <h:outputText value="#{pessoa.dataNascimento}" />
                 </p:column>
 
                 <p:column exportable="false">
-                    <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-cadastro-pessoa-content"
+                    <p:commandButton value="Atualizar" icon="pi pi-pencil" update=":dialogs:manage-cadastro-pessoa-content"
                                      oncomplete="PF('updatePessoaDialog').show()"
                                      styleClass="edit-button rounded-button ui-button-success" process="@this">
-                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.selectedPessoa}" />
+                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.pessoa}" />
 <!--                        <p:resetInput target=":dialogs:manage-cadastro-pessoa-content" />-->
                     </p:commandButton>
-                    <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                    <p:commandButton value="Excluir" class="ui-button-warning rounded-button" icon="pi pi-trash"
                                      process="@this"
                                      oncomplete="PF('deletePessoaDialog').show()">
-                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.selectedPessoa}" />
+                        <f:setPropertyActionListener value="#{pessoa}" target="#{cadastroPessoaBean.pessoa}" />
                     </p:commandButton>
                 </p:column>
 
@@ -69,20 +72,20 @@
             <p:dialog header="Cadastro Pessoa" showEffect="fade" modal="true" widgetVar="manageCadastroPessoaDialog"
                       responsive="true">
                 <p:outputPanel id="manage-cadastro-pessoa-content" class="ui-fluid">
-                    <p:outputPanel rendered="#{not empty cadastroPessoaBean.selecionarCadastroPessoaFormInput}">
+                    <p:outputPanel rendered="#{not empty cadastroPessoaBean.pessoaFormInput}">
 
                         <div class="field">
-                            <p:outputLabel for="name">Name</p:outputLabel>
-                            <p:inputText id="name" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.nome}" required="true" />
+                            <p:outputLabel for="nome">Nome</p:outputLabel>
+                            <p:inputText id="nome" value="#{cadastroPessoaBean.pessoaFormInput.nome}" required="true" />
                         </div>
                         <div class="field">
                             <p:outputLabel for="dataNascimento">Data nascimento</p:outputLabel>
-                            <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.dataNascimento}" pattern="MM/dd/yyyy"/>
+                            <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.pessoaFormInput.dataNascimento}" pattern="MM/dd/yyyy"/>
                         </div>
 
                         <div class="field">
                             <p:outputLabel for="sexo">Sexo</p:outputLabel>
-                            <p:selectOneRadio id="sexo" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.sexo}"
+                            <p:selectOneRadio id="sexo" value="#{cadastroPessoaBean.pessoaFormInput.sexo}"
                                               layout="responsive" columns="2">
                                 <f:selectItem itemLabel="Masculino" itemValue="MA" />
                                 <f:selectItem itemLabel="Feminino" itemValue="FE" />
@@ -90,11 +93,23 @@
                         </div>
                         <div class="field">
                             <p:outputLabel for="estado">Estado</p:outputLabel>
-                            <p:inputText id="estado" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.estado}" />
+                            <p:inputText id="estado" value="#{cadastroPessoaBean.pessoaFormInput.estado}" />
                         </div>
                         <div class="field">
                             <p:outputLabel for="cidade">Cidade</p:outputLabel>
-                            <p:inputText id="cidade" value="#{cadastroPessoaBean.selecionarCadastroPessoaFormInput.cidade}" />
+                            <p:inputText id="cidade" value="#{cadastroPessoaBean.pessoaFormInput.cidade}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="logradouro">Logradouro</p:outputLabel>
+                            <p:inputText id="logradouro" value="#{cadastroPessoaBean.pessoaFormInput.logradouro}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="numero">Numero</p:outputLabel>
+                            <p:inputText id="numero" value="#{cadastroPessoaBean.pessoaFormInput.numero}" />
+                        </div>
+                        <div class="field">
+                            <p:outputLabel for="cep">Cep</p:outputLabel>
+                            <p:inputText id="cep" value="#{cadastroPessoaBean.pessoaFormInput.cep}" />
                         </div>
                         <div>
                             <p:commandButton value="Adicionar Endereço" icon="pi pi-check" actionListener="#{cadastroPessoaBean.adicionaEndereco()}"
@@ -108,6 +123,15 @@
                                 </p:column>
                                 <p:column headerText="Cidade" >
                                     <h:outputText value="#{endereco.cidade}" />
+                                </p:column>
+                                <p:column headerText="Logradouro" >
+                                    <h:outputText value="#{endereco.logradouro}" />
+                                </p:column>
+                                <p:column headerText="Numero" >
+                                    <h:outputText value="#{endereco.numero}" />
+                                </p:column>
+                                <p:column headerText="CEP" >
+                                    <h:outputText value="#{endereco.cep}" />
                                 </p:column>
 
                             </p:dataTable>

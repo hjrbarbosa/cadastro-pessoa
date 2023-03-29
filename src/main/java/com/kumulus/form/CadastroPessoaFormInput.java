@@ -1,6 +1,9 @@
 package com.kumulus.form;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -21,4 +24,10 @@ public class CadastroPessoaFormInput {
     private String estado;
 
     private String cidade;
+
+    private String logradouro;
+
+    private Integer numero;
+
+    private String cep;
 }
