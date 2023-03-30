@@ -18,7 +18,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -44,33 +43,6 @@ public class CadastroPessoaBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        Endereco e1 = Endereco.builder()
-                .uf("PA")
-                .cidade("Barcarena")
-                .logradouro("Rua Raimundo Vinagre")
-                .numero(1)
-                .cep("68447000")
-                .build();
-        Endereco e2 = Endereco.builder()
-                .uf("PA")
-                .cidade("Belém")
-                .logradouro("Santa Matilde")
-                .numero(21)
-                .cep("66645595")
-                .build();
-
-        Pessoa p1 = Pessoa.builder()
-                .nome("Helder Barbosa")
-                .dataNascimento(new Date())
-                .sexo("MA")
-                .build();
-        e1.setPessoa(p1);
-        e2.setPessoa(p1);
-        p1.addEndereco(e1);
-        p1.addEndereco(e2);
-
-        this.pessoaService.salvar(p1);
-
         this.pessoas = this.pessoaService.findAll();
     }
 
